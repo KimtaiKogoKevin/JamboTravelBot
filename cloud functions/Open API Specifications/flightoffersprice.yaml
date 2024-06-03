@@ -1,0 +1,507 @@
+openapi: 3.0.0
+info:
+  title: Flight Offers Price API
+  version: 1.0.0
+servers:
+  - url: https://us-central1-vertexai-421417.cloudfunctions.net/flightOffersPrice
+paths:
+  /:
+    post:
+      operationId: flightOfferPrice
+      summary: Retrieve flight offers pricing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlightOffersPricingRequest'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlightOffersPricingResponse'
+        '400':
+          description: Error Missing "flightOffers" field in request body
+        '500':
+          description: An error occurred
+components:
+  schemas:
+    FlightOffersPricingRequest:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            type:
+              type: string
+              example: flight-offers-pricing
+            flightOffers:
+              type: array
+              items:
+                $ref: '#/components/schemas/FlightOfferRequest'
+    FlightOfferRequest:
+      type: object
+      properties:
+        type:
+          type: string
+          example: flight-offer
+        id:
+          type: string
+          example: 1
+        source:
+          type: string
+          example: GDS
+        instantTicketingRequired:
+          type: boolean
+          example: false
+        nonHomogeneous:
+          type: boolean
+          example: false
+        oneWay:
+          type: boolean
+          example: false
+        lastTicketingDate:
+          type: string
+          format: date
+          example: 2024-06-05
+        numberOfBookableSeats:
+          type: integer
+          example: 9
+        itineraries:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItineraryRequest'
+        price:
+          $ref: '#/components/schemas/PriceRequest'
+        pricingOptions:
+          $ref: '#/components/schemas/PricingOptionsRequest'
+        validatingAirlineCodes:
+          type: array
+          items:
+            type: string
+        travelerPricings:
+          type: array
+          items:
+            $ref: '#/components/schemas/TravelerPricingRequest'
+    ItineraryRequest:
+      type: object
+      properties:
+        duration:
+          type: string
+          example: PT11H20M
+        segments:
+          type: array
+          items:
+            $ref: '#/components/schemas/SegmentRequest'
+    SegmentRequest:
+      type: object
+      properties:
+        departure:
+          $ref: '#/components/schemas/DepartureRequest'
+        arrival:
+          $ref: '#/components/schemas/ArrivalRequest'
+        carrierCode:
+          type: string
+          example: UR
+        number:
+          type: string
+          example: 205
+        aircraft:
+          $ref: '#/components/schemas/AircraftRequest'
+        operating:
+          $ref: '#/components/schemas/OperatingRequest'
+        duration:
+          type: string
+          example: PT1H15M
+        id:
+          type: string
+          example: 3
+        numberOfStops:
+          type: integer
+          example: 0
+        blacklistedInEU:
+          type: boolean
+          example: false
+    DepartureRequest:
+      type: object
+      properties:
+        iataCode:
+          type: string
+          example: NBO
+        terminal:
+          type: string
+          example: 1B
+        at:
+          type: string
+          format: date-time
+          example: 2024-06-05T22:10:00
+    ArrivalRequest:
+      type: object
+      properties:
+        iataCode:
+          type: string
+          example: EBB
+        at:
+          type: string
+          format: date-time
+          example: 2024-06-05T23:25:00
+    AircraftRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          example: CR9
+    OperatingRequest:
+      type: object
+      properties:
+        carrierCode:
+          type: string
+          example: UR
+    PriceRequest:
+      type: object
+      properties:
+        currency:
+          type: string
+          example: USD
+        total:
+          type: string
+          example: 492.30
+        base:
+          type: string
+          example: 278.00
+        fees:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeeRequest'
+        grandTotal:
+          type: string
+          example: 492.30
+    FeeRequest:
+      type: object
+      properties:
+        amount:
+          type: string
+          example: 0.00
+        type:
+          type: string
+          example: SUPPLIER
+    PricingOptionsRequest:
+      type: object
+      properties:
+        fareType:
+          type: array
+          items:
+            type: string
+            example: PUBLISHED
+        includedCheckedBagsOnly:
+          type: boolean
+          example: true
+    TravelerPricingRequest:
+      type: object
+      properties:
+        travelerId:
+          type: string
+          example: 0
+        fareOption:
+          type: string
+          example: STANDARD
+        travelerType:
+          type: string
+          example: ADULT
+        price:
+          $ref: '#/components/schemas/PriceRequest'
+        fareDetailsBySegment:
+          type: array
+          items:
+            $ref: '#/components/schemas/FareDetailRequest'
+    FareDetailRequest:
+      type: object
+      properties:
+        segmentId:
+          type: string
+          example: 3
+        cabin:
+          type: string
+          example: ECONOMY
+        fareBasis:
+          type: string
+          example: UEOWAD
+        class:
+          type: string
+          example: U
+        includedCheckedBags:
+          $ref: '#/components/schemas/IncludedCheckedBagsRequest'
+    IncludedCheckedBagsRequest:
+      type: object
+      properties:
+        weight:
+          type: integer
+          example: 46
+        weightUnit:
+          type: string
+          example: KG
+    FlightOffersPricingResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            type:
+              type: string
+              example: flight-offers-pricing
+            flightOffers:
+              type: array
+              items:
+                $ref: '#/components/schemas/FlightOfferResponse'
+        bookingRequirements:
+          $ref: '#/components/schemas/BookingRequirements'
+        dictionaries:
+          $ref: '#/components/schemas/Dictionaries'
+    FlightOfferResponse:
+      type: object
+      properties:
+        type:
+          type: string
+          example: flight-offer
+        id:
+          type: string
+          example: 1
+        source:
+          type: string
+          example: GDS
+        instantTicketingRequired:
+          type: boolean
+          example: false
+        nonHomogeneous:
+          type: boolean
+          example: false
+        paymentCardRequired:
+          type: boolean
+          example: false
+        lastTicketingDate:
+          type: string
+          format: date
+          example: 2024-06-05
+        itineraries:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItineraryResponse'
+        price:
+          $ref: '#/components/schemas/PriceResponse'
+        pricingOptions:
+          $ref: '#/components/schemas/PricingOptionsResponse'
+        validatingAirlineCodes:
+          type: array
+          items:
+            type: string
+        travelerPricings:
+          type: array
+          items:
+            $ref: '#/components/schemas/TravelerPricingResponse'
+    ItineraryResponse:
+      type: object
+      properties:
+        segments:
+          type: array
+          items:
+            $ref: '#/components/schemas/SegmentResponse'
+    SegmentResponse:
+      type: object
+      properties:
+        departure:
+          $ref: '#/components/schemas/DepartureResponse'
+        arrival:
+          $ref: '#/components/schemas/ArrivalResponse'
+        carrierCode:
+          type: string
+          example: UR
+        number:
+          type: string
+          example: 205
+        aircraft:
+          $ref: '#/components/schemas/AircraftResponse'
+        operating:
+          $ref: '#/components/schemas/OperatingResponse'
+        duration:
+          type: string
+          example: PT1H15M
+        id:
+          type: string
+          example: 3
+        numberOfStops:
+          type: integer
+          example: 0
+        co2Emissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Co2Emissions'
+    DepartureResponse:
+      type: object
+      properties:
+        iataCode:
+          type: string
+          example: NBO
+        terminal:
+          type: string
+          example: 1B
+        at:
+          type: string
+          format: date-time
+          example: 2024-06-05T22:10:00
+    ArrivalResponse:
+      type: object
+      properties:
+        iataCode:
+          type: string
+          example: EBB
+        at:
+          type: string
+          format: date-time
+          example: 2024-06-05T23:25:00
+    AircraftResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          example: CR9
+    OperatingResponse:
+      type: object
+      properties:
+        carrierCode:
+          type: string
+          example: UR
+    PriceResponse:
+      type: object
+      properties:
+        currency:
+          type: string
+          example: USD
+        total:
+          type: string
+          example: 492.30
+        base:
+          type: string
+          example: 278.00
+        fees:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeeResponse'
+        grandTotal:
+          type: string
+          example: 492.30
+        billingCurrency:
+          type: string
+          example: USD
+    FeeResponse:
+      type: object
+      properties:
+        amount:
+          type: string
+          example: 0.00
+        type:
+          type: string
+          example: SUPPLIER
+    PricingOptionsResponse:
+      type: object
+      properties:
+        fareType:
+          type: array
+          items:
+            type: string
+            example: PUBLISHED
+        includedCheckedBagsOnly:
+          type: boolean
+          example: true
+    TravelerPricingResponse:
+      type: object
+      properties:
+        travelerId:
+          type: string
+          example: 0
+        fareOption:
+          type: string
+          example: STANDARD
+        travelerType:
+          type: string
+          example: ADULT
+        price:
+          $ref: '#/components/schemas/PriceResponse'
+        fareDetailsBySegment:
+          type: array
+          items:
+            $ref: '#/components/schemas/FareDetailResponse'
+    FareDetailResponse:
+      type: object
+      properties:
+        segmentId:
+          type: string
+          example: 3
+        cabin:
+          type: string
+          example: ECONOMY
+        fareBasis:
+          type: string
+          example: UEOWAD
+        class:
+          type: string
+          example: U
+        includedCheckedBags:
+          $ref: '#/components/schemas/IncludedCheckedBagsResponse'
+    IncludedCheckedBagsResponse:
+      type: object
+      properties:
+        quantity:
+          type: integer
+          example: 2
+    Co2Emissions:
+      type: object
+      properties:
+        weight:
+          type: integer
+          example: 111
+        weightUnit:
+          type: string
+          example: KG
+        cabin:
+          type: string
+          example: ECONOMY
+    BookingRequirements:
+      type: object
+      properties:
+        emailAddressRequired:
+          type: boolean
+          example: true
+        mobilePhoneNumberRequired:
+          type: boolean
+          example: true
+        travelerRequirements:
+          type: array
+          items:
+            $ref: '#/components/schemas/TravelerRequirement'
+    TravelerRequirement:
+      type: object
+      properties:
+        travelerId:
+          type: string
+          example: 0
+        documentRequired:
+          type: boolean
+          example: true
+    Dictionaries:
+      type: object
+      properties:
+        locations:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Location'
+    Location:
+      type: object
+      properties:
+        cityCode:
+          type: string
+          example: KGL
+        countryCode:
+          type: string
+          example: RW

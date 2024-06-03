@@ -1,0 +1,343 @@
+openapi: 3.0.0
+info:
+  title: Flight Search API
+  version: v1
+servers:
+    - url: https://us-central1-vertexai-421417.cloudfunctions.net/getFlightOffers
+paths:
+  /:
+    post:
+      operationId: getFlightOffers
+      description: Searches for flights based on the provided criteria
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currencyCode:
+                  type: string
+                  description: The currency code for the flight prices
+                originDestinations:
+                  type: array
+                  description: An array of origin-destination pairs
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        description: Unique identifier for the origin-destination pair
+                      originLocationCode:
+                        type: string
+                        description: The origin location code
+                      destinationLocationCode:
+                        type: string
+                        description: The destination location code
+                      departureDateTimeRange:
+                        type: object
+                        description: The departure date and time range
+                        properties:
+                          date:
+                            type: string
+                            format: date
+                            description: The departure date
+                          time:
+                            type: string
+                            format: time
+                            description: The departure time
+                travelers:
+                  type: array
+                  description: An array of traveler information
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        description: Unique identifier for the traveler
+                      travelerType:
+                        type: string
+                        description: The type of traveler (e.g., ADULT, CHILD)
+                sources:
+                  type: array
+                  description: An array of data sources to search
+                  items:
+                    type: string
+                searchCriteria:
+                  type: object
+                  description: The search criteria for the flight search
+                  properties:
+                    maxFlightOffers:
+                      type: integer
+                      description: The maximum number of flight offers to return
+                    flightFilters:
+                      type: object
+                      description: Filters to apply to the flight search
+                      properties:
+                        cabinRestrictions:
+                          type: array
+                          description: Cabin restrictions for the flight search
+                          items:
+                            type: object
+                            properties:
+                              cabin:
+                                type: string
+                                description: The cabin class (e.g., BUSINESS, ECONOMY)
+                              coverage:
+                                type: string
+                                description: The coverage of the cabin restriction
+                              originDestinationIds:
+                                type: array
+                                description: The origin-destination IDs for which the cabin restriction applies
+                                items:
+                                  type: string
+      responses:
+        '200':
+          description: Successful flight search response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+                        description: The number of flight offers returned
+                  data:
+                    type: array
+                    description: An array of flight offer objects
+                    items:
+                      $ref: '#/components/schemas/FlightOffer'
+                  dictionaries:
+                    type: object
+                    description: Dictionaries containing additional information about locations, aircraft, currencies, and carriers
+                    properties:
+                      locations:
+                        type: object
+                        description: Location information
+                        additionalProperties:
+                          $ref: '#/components/schemas/Location'
+                      aircraft:
+                        type: object
+                        description: Aircraft information
+                        additionalProperties:
+                          type: string
+                      currencies:
+                        type: object
+                        description: Currency information
+                        additionalProperties:
+                          type: string
+                      carriers:
+                        type: object
+                        description: Carrier information
+                        additionalProperties:
+                          type: string
+components:
+  schemas:
+    FlightOffer:
+      type: object
+      properties:
+        type:
+          type: string
+          description: The type of offer (e.g., flight-offer)
+        id:
+          type: string
+          description: Unique identifier for the flight offer
+        source:
+          type: string
+          description: The source of the flight offer (e.g., GDS)
+        instantTicketingRequired:
+          type: boolean
+          description: Whether instant ticketing is required for the flight offer
+        nonHomogeneous:
+          type: boolean
+          description: Whether the flight offer is non-homogeneous
+        oneWay:
+          type: boolean
+          description: Whether the flight offer is one-way
+        lastTicketingDate:
+          type: string
+          format: date
+          description: The last ticketing date for the flight offer
+        numberOfBookableSeats:
+          type: integer
+          description: The number of bookable seats for the flight offer
+        itineraries:
+          type: array
+          description: An array of itineraries for the flight offer
+          items:
+            type: object
+            properties:
+              duration:
+                type: string
+                description: The duration of the itinerary
+              segments:
+                type: array
+                description: An array of segments for the itinerary
+                items:
+                  type: object
+                  properties:
+                    departure:
+                      type: object
+                      properties:
+                        iataCode:
+                          type: string
+                          description: The IATA airport code for the departure airport
+                        at:
+                          type: string
+                          format: date-time
+                          description: The departure date and time
+                    arrival:
+                      type: object
+                      properties:
+                        iataCode:
+                          type: string
+                          description: The IATA airport code for the arrival airport
+                        at:
+                          type: string
+                          format: date-time
+                          description: The arrival date and time
+                    carrierCode:
+                      type: string
+                      description: The carrier code for the segment
+                    number:
+                      type: string
+                      description: The flight number for the segment
+                    aircraft:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                          description: The aircraft code for the segment
+                    operating:
+                      type: object
+                      properties:
+                        carrierCode:
+                          type: string
+                          description: The operating carrier code for the segment
+                    duration:
+                      type: string
+                      description: The duration of the segment
+                    id:
+                      type: string
+                      description: Unique identifier for the segment
+                    numberOfStops:
+                      type: integer
+                      description: The number of stops in the segment
+                    blacklistedInEU:
+                      type: boolean
+                      description: Whether the carrier for the segment is blacklisted in the EU
+        price:
+          type: object
+          description: The price information for the flight offer
+          properties:
+            currency:
+              type: string
+              description: The currency code for the price
+            total:
+              type: string
+              format: float
+              description: The total price of the flight offer
+            base:
+              type: string
+              format: float
+              description: The base price of the flight offer
+            fees:
+              type: array
+              description: An array of fees for the flight offer
+              items:
+                type: object
+                properties:
+                  amount:
+                    type: string
+                    format: float
+                    description: The amount of the fee
+                  type:
+                    type: string
+                    description: The type of fee (e.g., SUPPLIER, TICKETING)
+            grandTotal:
+              type: string
+              format: float
+              description: The grand total price of the flight offer
+        pricingOptions:
+          type: object
+          description: Pricing options for the flight offer
+          properties:
+            fareType:
+              type: array
+              description: An array of fare types for the flight offer
+              items:
+                type: string
+            includedCheckedBagsOnly:
+              type: boolean
+              description: Whether the flight offer includes checked bags only
+        validatingAirlineCodes:
+          type: array
+          description: An array of validating airline codes for the flight offer
+          items:
+            type: string
+        travelerPricings:
+          type: array
+          description: An array of traveler pricing information for the flight offer
+          items:
+            type: object
+            properties:
+              travelerId:
+                type: string
+                description: The traveler ID for the traveler pricing information
+              fareOption:
+                type: string
+                description: The fare option for the traveler pricing information
+              travelerType:
+                type: string
+                description: The traveler type for the traveler pricing information
+              price:
+                type: object
+                description: The price information for the traveler pricing
+                properties:
+                  currency:
+                    type: string
+                    description: The currency code for the price
+                  total:
+                    type: string
+                    format: float
+                    description: The total price for the traveler pricing
+                  base:
+                    type: string
+                    format: float
+                    description: The base price for the traveler pricing
+              fareDetailsBySegment:
+                type: array
+                description: An array of fare details by segment for the traveler pricing
+                items:
+                  type: object
+                  properties:
+                    segmentId:
+                      type: string
+                      description: The segment ID for the fare details
+                    cabin:
+                      type: string
+                      description: The cabin class for the fare details
+                    fareBasis:
+                      type: string
+                      description: The fare basis for the fare details
+                    class:
+                      type: string
+                      description: The class for the fare details
+                    includedCheckedBags:
+                      type: object
+                      description: Information about included checked bags for the fare details
+                      properties:
+                        quantity:
+                          type: integer
+                          description: The quantity of included checked bags
+    Location:
+      type: object
+      properties:
+        cityCode:
+          type: string
+          description: The city code for the location
+        countryCode:
+          type: string
+          description: The country code for the location
