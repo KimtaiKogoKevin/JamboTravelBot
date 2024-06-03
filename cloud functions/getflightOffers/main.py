@@ -13,7 +13,7 @@ logger = logging_client.logger(__name__)
 storage_client = storage.Client()
 
 # Define the GCS bucket and file name
-bucket_name = 'travelstore'  # Replace with your actual bucket name
+bucket_name = 'BUCKET-NAME'  # Replace with your actual bucket name
 file_name = 'flight-offer.json'
 
 @functions_framework.http
@@ -30,30 +30,30 @@ def getFlightOffers(request: Request):
         Functions, see the `Writing HTTP functions` page
         <https://cloud.google.com/functions/docs/writing/http#http_frameworks>
     """
-    
+
     # Initialize the Amadeus client
     amadeus = Client(
-      client_id='b9mXOtZEc0pbUhQBuMjwYA7qGJB6zjx9',
-      client_secret='eHUxsx9lfYUQ5Pcv'
+      client_id='CLIENT-ID',
+      client_secret='CLIENT-SECRET'
     )
-    
+
     # Get the request body
     request_json = request.get_json(silent=True)
-    
+
     if request_json is not None and 'currencyCode' in request_json:
         currency_code = request_json['currencyCode']
         origin_destinations = request_json.get('originDestinations', [])
         travelers = request_json.get('travelers', [])
         sources = request_json.get('sources', [])
         search_criteria = request_json.get('searchCriteria', {})
-        
+
         # Log the request data
         logger.log_text(f"Currency Code: {currency_code}")
         logger.log_text(f"Origin Destinations: {origin_destinations}")
         logger.log_text(f"Travelers: {travelers}")
         logger.log_text(f"Sources: {sources}")
         logger.log_text(f"Search Criteria: {search_criteria}")
-        
+
         # Create the request body
         body = {
             'currencyCode': currency_code,
@@ -62,7 +62,7 @@ def getFlightOffers(request: Request):
             'sources': sources,
             'searchCriteria': search_criteria
         }
-        
+
         try:
             # Make the API request
             response = amadeus.shopping.flight_offers_search.post(body)
@@ -77,6 +77,6 @@ def getFlightOffers(request: Request):
             return json.dumps(response.data)
         except ResponseError as error:
             logger.log_text(f"Error: {error}")
-            return json.dumps({"error": str(error)}), 500 
+            return json.dumps({"error": str(error)}), 500
     else:
         return 'Error: Invalid request body.', 400

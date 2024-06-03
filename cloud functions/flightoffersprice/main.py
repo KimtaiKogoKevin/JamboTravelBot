@@ -11,8 +11,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Set environment variables
-project_id = 'vertexai-421417'
-bucket_name = 'travelstore'
+project_id = 'project id' #Replace with actual project ID
+bucket_name = 'BUCKET NAME' #Replace with the bucket name
 file_name = 'flight-offer.json'
 
 # Amadeus API credentials - safer to use environment variables
@@ -29,8 +29,8 @@ else:
     logger.warning("Amadeus API credentials not found in environment. Using hardcoded values for testing purposes. "
                 "This is insecure for production environments!")
     amadeus = Client(
-        client_id='b9mXOtZEc0pbUhQBuMjwYA7qGJB6zjx9',  # Replace with actual IDs if needed
-        client_secret='eHUxsx9lfYUQ5Pcv' 
+        client_id='CLIENT-ID',  # Replace with actual IDs if needed
+        client_secret='CLIENT SECRET'
     )
 
 # Function to read data from Google Cloud Storage
@@ -53,7 +53,7 @@ def read_data_from_gcs(bucket_name, file_name):
     except Exception as e:
         logger.error(f"Error reading from GCS: {e}")
         logger.error(traceback.format_exc()) # Log full traceback for detailed debugging
-        return None 
+        return None
 
 # Cloud Function entry point
 @functions_framework.http
@@ -71,30 +71,30 @@ def flightOffersPrice(request):
 
         # Get JSON data from request or GCS bucket
         if request.method == 'POST':
-            logger.info("POST request received") 
+            logger.info("POST request received")
             request_json = request.get_json(silent=True)
             if request_json and 'flightOffers' in request_json:
-                logger.info("Flight offers found in request JSON") 
+                logger.info("Flight offers found in request JSON")
                 flight_offers = request_json['flightOffers']
             else:
-                logger.info("Flight offers not in request, attempting to read from GCS") 
+                logger.info("Flight offers not in request, attempting to read from GCS")
                 data = read_data_from_gcs(bucket_name, file_name)
                 print(data)
                 if data:
                     flight_offers = json.loads(data)
                     print(flight_offers)
-                    logger.info("Successfully read flight offers from GCS") 
+                    logger.info("Successfully read flight offers from GCS")
                 else:
                     return "Error: Flight offers not found in request or GCS.", 400
         else:
             logger.warning("Invalid request method")
             return 'Error: Only POST requests are supported.', 405
-       
+
         logger.info("Constructing request body for Amadeus API")
         # Access the first flight offer
         # flight_offer = flight_offers['flightOffers'][0]
 
-      
+
 
           # Extract the first two flight offers from the dictionary
         # flight_offers_to_price = dict(list(flight_offers.items())[:2])
@@ -110,7 +110,7 @@ def flightOffersPrice(request):
         logger.info("Making API request to Amadeus")
         # Make API request
         response = amadeus.shopping.flight_offers.pricing.post(flight_offers)
-        logger.debug(f"API response: {response.data}") 
+        logger.debug(f"API response: {response.data}")
 
 
         logger.info("API request successful, returning response")
