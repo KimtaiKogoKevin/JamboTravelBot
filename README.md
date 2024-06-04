@@ -28,9 +28,9 @@ The **Jambo Travel Bot** is an AI-powered travel assistant designed to streamlin
   - Responses are returned to the user.
 
 ### Challenges
-- Debugging: Addressed issues during development.
-- Parameter Passing: Ensured seamless data flow between agents.
-- Correcting Incorrect Responses: Improved accuracy.
+- Debugging: There were challenges debugging the last Amadeus API , the create flight orders APi , it should however be included ver soon .
+- Parameter Passing: There were challenges passing data from one agent to the next
+- Correcting Incorrect Responses: Sometimes the request body has incorrect data formats causing error 400 in the response , this is an error i think can be fixed when the agent is fine tuned well.
 
 ### Achievements
 Successfully integrated the Amadeus Flight Search and Flight Offers Price APIs into the Google Vertex AI agent using cloud functions and Open API Swagger 3.0 specifications.
