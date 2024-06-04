@@ -50,18 +50,19 @@ Platform. It was built using the Google Vertex AI Agent Builder, Google Cloud Fu
 Cloud Run, Amadeus Self Service Test APIs, and Google Cloud Storage Bucket.
  The bot takes input from the traveler through a prompt,it then  builds a request body using Swagger 3.0 Open API
 specifications. It sends this request by triggering the respective cloud function, obtaining rhe data from Amadeus Api  and returns the
-response to the user. [Amadeus] [https://developers.amadeus.com/]
+response to the user. [Amadeus](https://developers.amadeus.com/)
 In certain  use cases, the project stores JSON data in a Google Cloud Storage
 Bucket and downloads it for use when calling the Amadeus API.
 ### Challenges
 The project faced some challenges,such as
 - lengthy debugging periods,
 - difficulties in passing parameters from one agent to another,
-- correcting incorrect responses and debugging certain errors to ensure the data being passed in the request body is valid according to amadeus APIs specifcations. [Amadeus][https://developers.amadeus.com/]
+- correcting incorrect responses and debugging certain errors to ensure the data being passed in the request body is valid according to amadeus APIs specifcations. [Amadeus](https://developers.amadeus.com/)
 ### Achievements
-The integration of the [Amadeus Flight Search] [[https://developers.amadeus.com/self-service/category/flights/api-doc/flight-offers-search]] and [Flight Offers Price] [https://developers.amadeus.com/self-service/category/flights/api-doc/flight-offers-price] API to the
+The integration of the [Amadeus Flight Search](https://developers.amadeus.com/self-service/category/flights/api-doc/flight-offers-search) and [Flight Offers Price](https://developers.amadeus.com/self-service/category/flights/api-doc/flight-offers-price) API to the
 Google Vertex AI agent using cloud functions and Open API Swagger 3.0 specifications is a
 significant accomplishment.
+
 ### Learnings
 The project provided valuable experience in creating an agent and giving it prompts
 on Google Vertex AI Agent Builder.
